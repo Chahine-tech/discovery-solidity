@@ -10,18 +10,24 @@ contract DecentralizedLibrary {
     }
 
     mapping(uint256 => Book) private books;
+    uint256[] private bookISBNs;
 
     event BookAdded(uint256 isbn, string title, uint256 copies);
     event BookUpdated(uint256 isbn, uint256 newCopies);
     event CopiesAdded(uint256 isbn, uint256 additionalCopies);
+    event CopiesRemoved(uint256 isbn, uint256 removedCopies);
 
-    function addBook(uint256 isbn, string memory title, uint256 copies) public {
+    function addBook(
+        uint256 isbn,
+        string memory title,
+        uint256 copies
+    ) public {
         require(!books[isbn].exists, "Book with this ISBN already exists");
         books[isbn] = Book(title, copies, true);
+        bookISBNs.push(isbn);
         emit BookAdded(isbn, title, copies);
     }
 
-   
     function updateCopies(uint256 isbn, uint256 newCopies) public {
         require(books[isbn].exists, "Book with this ISBN does not exist");
         books[isbn].copies = newCopies;
@@ -37,5 +43,23 @@ contract DecentralizedLibrary {
         require(books[isbn].exists, "Book with this ISBN does not exist");
         books[isbn].copies += additionalCopies;
         emit CopiesAdded(isbn, additionalCopies);
+    }
+
+    function getAllISBNs() public view returns (uint256[] memory) {
+        return bookISBNs;
+    }
+
+    function bookExists(uint256 isbn) public view returns (bool) {
+        return books[isbn].exists;
+    }
+
+    function removeCopies(uint256 isbn, uint256 removedCopies) public {
+        require(books[isbn].exists, "Book with this ISBN does not exist");
+        require(
+            books[isbn].copies >= removedCopies,
+            "Not enough copies to remove"
+        );
+        books[isbn].copies -= removedCopies;
+        emit CopiesRemoved(isbn, removedCopies);
     }
 }
