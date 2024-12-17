@@ -10,6 +10,7 @@ contract ProductsInfo {
     }
 
     Product[] private products;
+    mapping(uint256 => uint256) private idToIndex;
 
     constructor() {}
 
@@ -43,11 +44,19 @@ contract ProductsInfo {
         return products;
     }
 
-    function updateProduct(
-        uint256 id,
-        uint256 quantity
-    ) public {
-       require(products.length > id, "Product not found.");
-       products[id].quantity = quantity;
+    function updateProduct(uint256 id, uint256 quantity) public {
+        require(products.length > id, "Product not found.");
+        products[id].quantity = quantity;
+    }
+
+    function deleteById(uint256 _id) public {
+        uint256 index = idToIndex[_id];
+        require(index < products.length, "Product not found.");
+
+        products[index] = products[products.length - 1];
+        products.pop();
+
+        idToIndex[products[index].id] = index;
+        delete idToIndex[_id];
     }
 }
