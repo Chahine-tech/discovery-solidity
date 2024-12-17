@@ -50,7 +50,7 @@ contract DecentralizedLibrary {
     }
 
     function bookExists(uint256 isbn) public view returns (bool) {
-        return books[isbn].exists;
+        return books[isbn].exists && bytes(books[isbn].title).length > 0;
     }
 
     function removeCopies(uint256 isbn, uint256 removedCopies) public {
