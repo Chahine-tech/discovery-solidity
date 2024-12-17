@@ -44,6 +44,32 @@ contract ProductsInfo {
         return products;
     }
 
+    function getAllProductWithQuantities()
+        public
+        view
+        returns (Product[] memory)
+    {
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < products.length; i++) {
+            if (products[i].quantity > 0) {
+                count++;
+            }
+        }
+
+        Product[] memory productsWithQuantities = new Product[](count);
+
+        uint256 index = 0;
+        for (uint256 i = 0; i < products.length; i++) {
+            if (products[i].quantity > 0) {
+                productsWithQuantities[index] = products[i];
+                index++;
+            }
+        }
+
+        return productsWithQuantities;
+    }
+
     function updateProduct(uint256 id, uint256 quantity) public {
         require(products.length > id, "Product not found.");
         products[id].quantity = quantity;
